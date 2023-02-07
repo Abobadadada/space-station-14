@@ -89,9 +89,6 @@
       - id: GasAnalyzer
       - id: MedkitOxygenFilled
       - id: HolofanProjector
-      - id: PlasmaCutter
-      - id: PCAmmo
-        amount: 2
 
 - type: entity
   id: LockerEngineerFilled
