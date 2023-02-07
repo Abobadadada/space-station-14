@@ -9,6 +9,8 @@ using Content.Shared.Doors.Systems;
 using Content.Shared.Interaction;
 using Content.Shared.Popups;
 using Robust.Server.GameObjects;
+using Content.Shared.Verbs;
+using Content.Server.AI;
 
 namespace Content.Server.Doors.Systems
 {
@@ -28,6 +30,7 @@ namespace Content.Server.Doors.Systems
             SubscribeLocalEvent<AirlockComponent, ActivateInWorldEvent>(OnActivate, before: new [] {typeof(DoorSystem)});
             SubscribeLocalEvent<AirlockComponent, DoorGetPryTimeModifierEvent>(OnGetPryMod);
             SubscribeLocalEvent<AirlockComponent, BeforeDoorPryEvent>(OnDoorPry);
+            SubscribeLocalEvent<AirlockComponent, GetVerbsEvent<AlternativeVerb>>(AddAIVerbs);
         }
 
         private void OnPowerChanged(EntityUid uid, AirlockComponent component, ref PowerChangedEvent args)
@@ -172,6 +175,48 @@ namespace Content.Server.Doors.Systems
                 component.Owner.PopupMessage(args.User, Loc.GetString("airlock-component-cannot-pry-is-powered-message"));
                 args.Cancel();
             }
+        }
+
+        private void AddAIVerbs(EntityUid uid, AirlockComponent component, GetVerbsEvent<AlternativeVerb> args)
+        {
+            if (!this.IsPowered(component.Owner, EntityManager))
+                return;
+
+            if (!EntityManager.HasComponent<AIComponent>(args.User))
+                return;
+
+            AlternativeVerb emergencyAccess = new()
+            {
+                Act = () =>
+                {
+                    if (!component.EmergencyAccess == true)
+                    {
+                        component.EmergencyAccess = true;
+                    }
+                    else
+                    {
+                        component.EmergencyAccess = false;
+                    }
+                },
+                Text = Loc.GetString("ai-interact-emergency-access-door"),
+                Priority = 2,
+                IconTexture = "/Textures/Interface/VerbIcons/unlock.svg.192dpi.png"
+            };
+            args.Verbs.Add(emergencyAccess);
+
+            if (component.BoltWireCut) return;
+
+            AlternativeVerb boltDoor = new()
+            {
+                Act = () =>
+                {
+                    component.SetBoltsWithAudio(!component.IsBolted());
+                },
+                Text = Loc.GetString("ai-interact-bolt-door"),
+                Priority = 1,
+                IconTexture = "/Textures/Interface/VerbIcons/lock.svg.192dpi.png"
+            };
+            args.Verbs.Add(boltDoor);
         }
     }
 }
