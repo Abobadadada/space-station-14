@@ -104,6 +104,13 @@ namespace Content.Client.Input
             AI.AddFunction(EngineKeyFunctions.MoveRight);
             AI.AddFunction(EngineKeyFunctions.Walk);
 
+            AI.AddFunction(ContentKeyFunctions.ArcadeUp);
+            AI.AddFunction(ContentKeyFunctions.ArcadeDown);
+            AI.AddFunction(ContentKeyFunctions.ArcadeLeft);
+            AI.AddFunction(ContentKeyFunctions.ArcadeRight);
+            AI.AddFunction(ContentKeyFunctions.Arcade1);
+            AI.AddFunction(ContentKeyFunctions.Arcade2);
+            AI.AddFunction(ContentKeyFunctions.Arcade3);
             AI.AddFunction(ContentKeyFunctions.ActivateItemInWorld);
             AI.AddFunction(ContentKeyFunctions.AltActivateItemInWorld);
 

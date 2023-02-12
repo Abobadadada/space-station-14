@@ -1,6 +1,6 @@
 using Content.Server.Construction.Components;
-using Content.Server.Destructible;
 using Content.Server.Interaction;
+using Content.Server.MachineLinking.Components;
 using Content.Server.Power.Components;
 using Content.Server.Power.EntitySystems;
 using Content.Shared.AI;
@@ -14,21 +14,21 @@ namespace Content.Server.AI
     public sealed class AISystem : SharedAISystem
     {
 
+
         public override void Initialize()
         {
             base.Initialize();
             SubscribeLocalEvent<AIComponent, InteractionAttemptEvent>(OnInteractionAttempt);
         }
 
-        void OnInteractionAttempt(EntityUid uid, AIComponent component, InteractionAttemptEvent args)
+        private void OnInteractionAttempt(EntityUid uid, AIComponent component, InteractionAttemptEvent args)
         {
-            if (args.Target == null) return; //checking for entity
+            //We need to check for power(and also if its an APC, because its not powered)
+            if (args.Target == null) return;
             var target = args.Target.Value;
 
-            if (!HasComp<DestructibleComponent>(target)) //if entity is not construction no interaction
-                args.Cancel();
-
-            if (!this.IsPowered(target, EntityManager)) //if no power no interaction
+            if (!this.IsPowered(target, EntityManager) && !HasComp<ApcComponent>(target)
+                && !HasComp<SignalSwitchComponent>(target))
                 args.Cancel();
         }
     }

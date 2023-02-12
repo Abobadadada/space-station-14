@@ -1,4 +1,5 @@
 using Content.Server.Administration.Managers;
+using Content.Server.AI;
 using Content.Server.Ghost.Components;
 using Content.Shared.ActionBlocker;
 using Content.Shared.Hands;
@@ -40,6 +41,9 @@ namespace Content.Server.UserInterface
         private void OnBoundInterfaceInteractAttempt(BoundUserInterfaceMessageAttempt ev)
         {
             if (!TryComp(ev.Target, out ActivatableUIComponent? comp))
+                return;
+
+            if (!TryComp(ev.Sender.AttachedEntity, out AIComponent? ai) || Exists(ai.Owner))
                 return;
 
             if (!comp.RequireHands)
@@ -84,6 +88,12 @@ namespace Content.Server.UserInterface
         private void OnActivate(EntityUid uid, ActivatableUIComponent component, ActivateInWorldEvent args)
         {
             if (args.Handled) return;
+            if (HasComp<AIComponent>(args.User))
+            {
+                args.Handled = InteractUI(args.User, component);
+                return;
+            }
+
             if (component.InHandsOnly) return;
             args.Handled = InteractUI(args.User, component);
         }
@@ -111,7 +121,7 @@ namespace Content.Server.UserInterface
             if (!_blockerSystem.CanInteract(user, aui.Owner) && (!aui.AllowSpectator || !HasComp<GhostComponent>(user)))
                 return false;
 
-            if (aui.RequireHands && !HasComp<SharedHandsComponent>(user))
+            if (aui.RequireHands && !HasComp<SharedHandsComponent>(user) && !HasComp<AIComponent>(user))
                 return false;
 
             if (!EntityManager.TryGetComponent(user, out ActorComponent? actor)) return false;

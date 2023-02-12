@@ -1,3 +1,4 @@
+using Content.Server.AI;
 using Content.Server.Atmos.Components;
 using Content.Server.Atmos.EntitySystems;
 using Content.Server.Atmos.Monitor.Systems;
@@ -12,6 +13,7 @@ using Content.Shared.Doors;
 using Content.Shared.Doors.Components;
 using Content.Shared.Doors.Systems;
 using Content.Shared.Popups;
+using Content.Shared.Verbs;
 using Microsoft.Extensions.Options;
 using Robust.Server.GameObjects;
 using Robust.Shared.Map.Components;
@@ -45,6 +47,9 @@ namespace Content.Server.Doors.Systems
             SubscribeLocalEvent<FirelockComponent, MapInitEvent>(UpdateVisuals);
             SubscribeLocalEvent<FirelockComponent, ComponentStartup>(UpdateVisuals);
             SubscribeLocalEvent<FirelockComponent, PowerChangedEvent>(PowerChanged);
+
+            //AI
+            SubscribeLocalEvent<FirelockComponent, GetVerbsEvent<AlternativeVerb>>(AddAIVerbs);
         }
 
         private void PowerChanged(EntityUid uid, FirelockComponent component, ref PowerChangedEvent args)
@@ -337,6 +342,25 @@ namespace Content.Server.Doors.Systems
             }
 
             return false;
+        }
+
+        private void AddAIVerbs(EntityUid uid, FirelockComponent component, GetVerbsEvent<AlternativeVerb> args)
+        {
+            if (!this.IsPowered(component.Owner, EntityManager)) return;
+
+            if (!HasComp<AIComponent>(args.User)) return;
+
+            AlternativeVerb toggleFirelock = new()
+            {
+                Act = () =>
+                {
+                    _doorSystem.TryToggleDoor(component.Owner);
+                },
+                Text = Loc.GetString("ai-interact-toggle-emergency-door"),
+                Priority = 1,
+                IconTexture = "/Textures/Interface/VerbIcons/lock.svg.192dpi.png"
+            };
+            args.Verbs.Add(toggleFirelock);
         }
     }
 }

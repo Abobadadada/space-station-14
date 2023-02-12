@@ -67,6 +67,11 @@
   - type: Damageable
     damageContainer: Inorganic
     damageModifierSet: Metallic
+  - type: Speech #let air alarm speak
+    enabled: true
+  - type: IntrinsicRadioTransmitter
+    channels:
+      - Silicons
   - type: Destructible
     thresholds:
       - trigger:

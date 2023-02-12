@@ -16,5 +16,6 @@ chat-radio-medical = Medical
 chat-radio-science = Science
 chat-radio-security = Security
 chat-radio-service = Service
+chat-radio-silicons = Silicons
 chat-radio-supply = Supply
 chat-radio-syndicate = Syndicate

@@ -167,6 +167,10 @@
     tags:
       - ShoesRequiredStepTriggerImmune
       - CannotSuicide
+  - type: IntrinsicRadioReceiver
+  - type: ActiveRadio
+    channels:
+      - Silicons
 
 - type: entity
   name: onestar mecha
@@ -231,6 +235,9 @@
     - type: AI
     - type: Mind
     - type: Clickable
+    - type: Actions
+    - type: HeatResistance
+    - type: InteractionOutline
     - type: Sprite
       drawdepth: SmallMobs
       netsync: false
@@ -260,6 +267,17 @@
       baseSprintSpeed: 8
       baseWalkSpeed: 6
     - type: MovementIgnoreGravity
+    - type: IntrinsicRadioTransmitter
+      channels:
+        - Common
+        - Command
+        - Engineering
+        - Medical
+        - Science
+        - Security
+        - Service
+        - Supply
+        - Silicons
     - type: IntrinsicRadioReceiver
     - type: ActiveRadio
       channels:
@@ -271,6 +289,7 @@
         - Security
         - Service
         - Supply
+        - Silicons
     - type: DoAfter
     - type: Examiner
     - type: UserInterface
@@ -291,8 +310,8 @@
           toggleAction:
             name: action-name-show-solar-console
             description: action-description-show-solar-console
-            icon: { sprite: Structures/Machines/parts.rsi, state: box_0 }
-            iconOn: Structures/Machines/parts.rsi/box_2.png
+            icon: { sprite: Structures/Machines/parts.rsi, state: vbox_0 }
+            iconOn: Structures/Machines/parts.rsi/vbox_1.png
             keywords: [ "AI", "console", "interface" ]
             priority: -10
             event: !type:ToggleIntrinsicUIEvent
@@ -300,8 +319,8 @@
           toggleAction:
             name: action-name-show-communications-console
             description: action-description-show-communications-console
-            icon: { sprite: Structures/Machines/parts.rsi, state: box_0 }
-            iconOn: Structures/Machines/parts.rsi/box_2.png
+            icon: { sprite: Structures/Machines/parts.rsi, state: vbox_0 }
+            iconOn: Structures/Machines/parts.rsi/vbox_1.png
             keywords: [ "AI", "console", "interface" ]
             priority: -10
             event: !type:ToggleIntrinsicUIEvent
@@ -309,8 +328,8 @@
           toggleAction:
             name: action-name-show-radar-console
             description: action-description-show-radar-console
-            icon: { sprite: Structures/Machines/parts.rsi, state: box_0 }
-            iconOn: Structures/Machines/parts.rsi/box_2.png
+            icon: { sprite: Structures/Machines/parts.rsi, state: vbox_0 }
+            iconOn: Structures/Machines/parts.rsi/vbox_1.png
             keywords: [ "AI", "console", "interface" ]
             priority: -10
             event: !type:ToggleIntrinsicUIEvent
@@ -318,8 +337,8 @@
           toggleAction:
             name: action-name-show-cargo-console
             description: action-description-show-cargo-console
-            icon: { sprite: Structures/Machines/parts.rsi, state: box_0 }
-            iconOn: Structures/Machines/parts.rsi/box_2.png
+            icon: { sprite: Structures/Machines/parts.rsi, state: vbox_0 }
+            iconOn: Structures/Machines/parts.rsi/vbox_1.png
             keywords: [ "AI", "console", "interface" ]
             priority: -10
             event: !type:ToggleIntrinsicUIEvent
@@ -327,15 +346,15 @@
           toggleAction:
             name: action-name-show-crew-monitoring-console
             description: action-description-crew-monitoring-console
-            icon: { sprite: Structures/Machines/parts.rsi, state: box_0 }
-            iconOn: Structures/Machines/parts.rsi/box_2.png
+            icon: { sprite: Structures/Machines/parts.rsi, state: vbox_0 }
+            iconOn: Structures/Machines/parts.rsi/vbox_1.png
             keywords: [ "AI", "console", "interface" ]
             priority: -10
             event: !type:ToggleIntrinsicUIEvent
     - type: SolarControlConsole
     - type: CommunicationsConsole
       title: communicationsconsole-announcement-title-AI
-      color: "#228b22"
+      color: "#00bfff"
     - type: RadarConsole
     - type: CargoOrderConsole
     - type: CrewMonitoringConsole
@@ -351,5 +370,4 @@
         - ShoesRequiredStepTriggerImmune
         - CannotSuicide
         - CanPilot
-    - type: Actions
 

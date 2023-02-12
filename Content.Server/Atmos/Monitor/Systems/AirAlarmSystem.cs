@@ -1,6 +1,7 @@
 using System.Linq;
 using Content.Server.Atmos.Monitor.Components;
 using Content.Server.Atmos.Piping.Components;
+using Content.Server.Chat.Systems;
 using Content.Server.DeviceNetwork;
 using Content.Server.DeviceNetwork.Components;
 using Content.Server.DeviceNetwork.Systems;
@@ -39,6 +40,7 @@ public sealed class AirAlarmSystem : EntitySystem
     [Dependency] private readonly AccessReaderSystem _accessSystem = default!;
     [Dependency] private readonly PopupSystem _popup = default!;
     [Dependency] private readonly SharedInteractionSystem _interactionSystem = default!;
+    [Dependency] private readonly ChatSystem _chat = default!;
 
     #region Device Network API
 
@@ -318,6 +320,12 @@ public sealed class AirAlarmSystem : EntitySystem
         if (args.AlarmType == AtmosAlarmType.Danger)
         {
             SetMode(uid, addr, AirAlarmMode.WideFiltering, false);
+            //let AI and borgs(and drones too) know what happens
+            var message = Loc.GetString("atmos-alarm-ai-announcement",
+                       ("coordinatesX", Transform(uid).Coordinates.X),
+                       ("coordinatesY", Transform(uid).Coordinates.Y));
+
+            _chat.TrySendInGameICMessage(component.Owner, message, InGameICChatType.Speak, false, false, null, null, null, true);
         }
         else if (args.AlarmType == AtmosAlarmType.Normal || args.AlarmType == AtmosAlarmType.Warning)
         {

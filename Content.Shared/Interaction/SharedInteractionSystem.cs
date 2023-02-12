@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Content.Shared.ActionBlocker;
 using Content.Shared.Administration.Logs;
+using Content.Shared.AI;
 using Content.Shared.CombatMode;
 using Content.Shared.Database;
 using Content.Shared.Ghost;
@@ -19,6 +20,7 @@ using Content.Shared.Throwing;
 using Content.Shared.Timing;
 using Content.Shared.Verbs;
 using Content.Shared.Wall;
+using Internal.TypeSystem;
 using JetBrains.Annotations;
 using Robust.Shared.Containers;
 using Robust.Shared.Input;
@@ -96,7 +98,16 @@ namespace Content.Shared.Interaction
         /// </summary>
         private void OnBoundInterfaceInteractAttempt(BoundUserInterfaceMessageAttempt ev)
         {
-            if (ev.Sender.AttachedEntity is not { } user || !_actionBlockerSystem.CanInteract(user, ev.Target))
+            if (ev.Sender.AttachedEntity is not { } user)
+            {
+                ev.Cancel();
+                return;
+            }
+
+            if (HasComp<SharedAIComponent>(ev.Sender.AttachedEntity.Value))
+                return;
+
+            if (!_actionBlockerSystem.CanInteract(user, ev.Target))
             {
                 ev.Cancel();
                 return;
@@ -233,6 +244,24 @@ namespace Content.Shared.Interaction
 
             if (target != null && Deleted(target.Value))
                 return;
+
+            if (HasComp<SharedAIComponent>(user))
+            {
+                if (!_actionBlockerSystem.CanInteract(user, target))
+                    return;
+
+                if (target == null)
+                    return;
+                //weh
+                if (altInteract)
+                {
+                    AltInteract(user, target.Value);
+                    return;
+                }
+
+                InteractHand(user, target.Value);
+                return;
+            }
 
             if (!altInteract && TryComp(user, out SharedCombatModeComponent? combatMode) && combatMode.IsInCombatMode)
             {
@@ -848,6 +877,25 @@ namespace Content.Shared.Interaction
                 && delayComponent.ActiveDelay)
                 return false;
 
+            var activateMsg = new ActivateInWorldEvent(user, used);
+
+            //if user is an AI entity skip all the checks and do the interaction with additional checks
+            if (HasComp<SharedAIComponent>(user))
+            {
+                if (!_actionBlockerSystem.CanInteract(user, used))
+                    return false;
+
+                RaiseLocalEvent(used, activateMsg, true);
+                if (!activateMsg.Handled)
+                    return false;
+
+                DoContactInteraction(user, used, activateMsg);
+                _useDelay.BeginDelay(used, delayComponent);
+                _adminLogger.Add(LogType.InteractActivate, LogImpact.Medium, $"{ToPrettyString(user):user} activated {ToPrettyString(used):used}");
+                return true;
+
+            }
+
             if (checkCanInteract && !_actionBlockerSystem.CanInteract(user, used))
                 return false;
 
@@ -863,7 +911,6 @@ namespace Content.Shared.Interaction
             if (!HasComp<SharedHandsComponent>(user))
                 return false;
 
-            var activateMsg = new ActivateInWorldEvent(user, used);
             RaiseLocalEvent(used, activateMsg, true);
             if (!activateMsg.Handled)
                 return false;

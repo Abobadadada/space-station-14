@@ -55,6 +55,13 @@
   color: "#6ca729"
 
 - type: radioChannel
+  id: Silicons
+  name: chat-radio-silicons
+  keycode: 'p'
+  frequency: 1343
+  color: "#00bfff"
+
+- type: radioChannel
   id: Supply
   name: chat-radio-supply
   keycode: 'u'

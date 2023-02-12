@@ -18,6 +18,7 @@ namespace Content.Server.Doors.Systems
     {
         [Dependency] private readonly WiresSystem _wiresSystem = default!;
         [Dependency] private readonly PowerReceiverSystem _power = default!;
+        [Dependency] private readonly SharedAirlockSystem _sharedAirlock = default!;
 
         public override void Initialize()
         {
@@ -185,27 +186,6 @@ namespace Content.Server.Doors.Systems
             if (!EntityManager.HasComponent<AIComponent>(args.User))
                 return;
 
-            AlternativeVerb emergencyAccess = new()
-            {
-                Act = () =>
-                {
-                    if (!component.EmergencyAccess == true)
-                    {
-                        component.EmergencyAccess = true;
-                    }
-                    else
-                    {
-                        component.EmergencyAccess = false;
-                    }
-                },
-                Text = Loc.GetString("ai-interact-emergency-access-door"),
-                Priority = 2,
-                IconTexture = "/Textures/Interface/VerbIcons/unlock.svg.192dpi.png"
-            };
-            args.Verbs.Add(emergencyAccess);
-
-            if (component.BoltWireCut) return;
-
             AlternativeVerb boltDoor = new()
             {
                 Act = () =>
@@ -216,7 +196,20 @@ namespace Content.Server.Doors.Systems
                 Priority = 1,
                 IconTexture = "/Textures/Interface/VerbIcons/lock.svg.192dpi.png"
             };
-            args.Verbs.Add(boltDoor);
+            if (!component.BoltWireCut)
+                args.Verbs.Add(boltDoor);
+
+            AlternativeVerb emergencyAccess = new()
+            {
+                Act = () =>
+                {
+                    _sharedAirlock.ToggleEmergencyAccess(component);
+                },
+                Text = Loc.GetString("ai-interact-emergency-access-door"),
+                Priority = 2,
+                IconTexture = "/Textures/Interface/VerbIcons/unlock.svg.192dpi.png"
+            };
+            args.Verbs.Add(emergencyAccess);
         }
     }
 }
