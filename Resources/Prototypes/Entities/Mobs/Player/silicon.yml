@@ -227,7 +227,6 @@
       Dead:
         Base: onestar_boss_wrecked
   - type: CombatMode
-<<<<<<< HEAD
 
 - type: entity
   id: AIEntity
@@ -372,5 +371,3 @@
         - CannotSuicide
         - CanPilot
 
-=======
->>>>>>> parent of 6bbdd64e7 (da merge)

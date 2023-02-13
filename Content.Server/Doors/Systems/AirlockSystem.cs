@@ -9,6 +9,8 @@ using Content.Shared.Doors.Systems;
 using Content.Shared.Interaction;
 using Content.Shared.Popups;
 using Robust.Server.GameObjects;
+using Content.Shared.Verbs;
+using Content.Server.AI;
 
 namespace Content.Server.Doors.Systems
 {
@@ -29,6 +31,7 @@ namespace Content.Server.Doors.Systems
             SubscribeLocalEvent<AirlockComponent, ActivateInWorldEvent>(OnActivate, before: new [] {typeof(DoorSystem)});
             SubscribeLocalEvent<AirlockComponent, DoorGetPryTimeModifierEvent>(OnGetPryMod);
             SubscribeLocalEvent<AirlockComponent, BeforeDoorPryEvent>(OnDoorPry);
+            SubscribeLocalEvent<AirlockComponent, GetVerbsEvent<AlternativeVerb>>(AddAIVerbs);
         }
 
         private void OnPowerChanged(EntityUid uid, AirlockComponent component, ref PowerChangedEvent args)
@@ -174,7 +177,6 @@ namespace Content.Server.Doors.Systems
                 args.Cancel();
             }
         }
-<<<<<<< HEAD
 
         private void AddAIVerbs(EntityUid uid, AirlockComponent component, GetVerbsEvent<AlternativeVerb> args)
         {
@@ -209,7 +211,5 @@ namespace Content.Server.Doors.Systems
             };
             args.Verbs.Add(emergencyAccess);
         }
-=======
->>>>>>> parent of 6bbdd64e7 (da merge)
     }
 }
