@@ -80,24 +80,31 @@ public sealed partial class ArtifactSystem : EntitySystem
     /// <remarks>
     /// Rebalance this shit at some point. Definitely OP.
     /// </remarks>
-    public int GetResearchPointValue(EntityUid uid, ArtifactComponent? component = null)
+    public int GetResearchPointValue(EntityUid uid, ArtifactComponent? component = null, bool getMaxPrice = false)
     {
         if (!Resolve(uid, ref component) || component.NodeTree == null)
             return 0;
 
-        var sumValue = component.NodeTree.AllNodes.Sum(GetNodePointValue);
-        var fullyExploredBonus = component.NodeTree.AllNodes.Any(x => !x.Triggered) ? 1 : 1.25f;
+        var sumValue = component.NodeTree.AllNodes.Sum(n => GetNodePointValue(n, component, getMaxPrice));
+        var fullyExploredBonus = component.NodeTree.AllNodes.All(x => x.Triggered) || getMaxPrice ? 1.25f : 1;
 
         var pointValue = (int) (sumValue * fullyExploredBonus);
         return pointValue;
     }
 
-    private float GetNodePointValue(ArtifactNode node)
+    /// <summary>
+    /// Gets the point value for an individual node
+    /// </summary>
+    private float GetNodePointValue(ArtifactNode node, ArtifactComponent component, bool getMaxPrice = false)
     {
-        if (!node.Discovered)
-            return 0;
+        var valueDeduction = 1f;
+        if (!getMaxPrice)
+        {
+            if (!node.Discovered)
+                return 0;
 
-        var valueDeduction = !node.Triggered ? 0.5f : 1;
+            valueDeduction = !node.Triggered ? 0.25f : 1;
+        }
         var nodeDanger = (node.Depth + node.Effect.TargetDepth + node.Trigger.TargetDepth) / 3;
 
         return (nodeDanger+1) * PointsPerNode * valueDeduction;

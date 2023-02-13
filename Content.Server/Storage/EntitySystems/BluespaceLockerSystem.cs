@@ -1,11 +1,15 @@
 ﻿using System.Linq;
-using Content.Server.Lock;
+using System.Threading;
+using Content.Server.DoAfter;
+using Content.Server.Explosion.EntitySystems;
 using Content.Server.Mind.Components;
 using Content.Server.Resist;
 using Content.Server.Station.Components;
 using Content.Server.Storage.Components;
 using Content.Server.Tools.Systems;
 using Content.Shared.Coordinates;
+using Content.Shared.Lock;
+using Content.Shared.Storage.Components;
 using Robust.Shared.Random;
 
 namespace Content.Server.Storage.EntitySystems;
@@ -32,7 +36,22 @@ public sealed class BluespaceLockerSystem : EntitySystem
         GetTargetStorage(component);
     }
 
-    private void PreOpen(EntityUid uid, BluespaceLockerComponent component, StorageBeforeOpenEvent args)
+    public void BluespaceEffect(EntityUid effectTargetUid, BluespaceLockerComponent effectSourceComponent, BluespaceLockerComponent? effectTargetComponent, bool bypassLimit = false)
+    {
+        if (!bypassLimit && Resolve(effectTargetUid, ref effectTargetComponent, false))
+            if (effectTargetComponent.BehaviorProperties.BluespaceEffectMinInterval > 0)
+            {
+                var curTimeTicks = _timing.CurTick.Value;
+                if (curTimeTicks < effectTargetComponent.BluespaceEffectNextTime)
+                    return;
+
+                effectTargetComponent.BluespaceEffectNextTime = curTimeTicks + (uint) (_timing.TickRate * effectTargetComponent.BehaviorProperties.BluespaceEffectMinInterval);
+            }
+
+        Spawn(effectSourceComponent.BehaviorProperties.BluespaceEffectPrototype, effectTargetUid.ToCoordinates());
+    }
+
+    private void PreOpen(EntityUid uid, BluespaceLockerComponent component, ref StorageBeforeOpenEvent args)
     {
         EntityStorageComponent? entityStorageComponent = null;
 
@@ -134,6 +153,11 @@ public sealed class BluespaceLockerSystem : EntitySystem
                 return link;
             component.BluespaceLinks.Remove(link);
         }
+    }
+
+    private void PostClose(EntityUid uid, BluespaceLockerComponent component, ref StorageAfterCloseEvent args)
+    {
+        PostClose(uid, component);
     }
 
 

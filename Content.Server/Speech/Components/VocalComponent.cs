@@ -27,7 +27,7 @@ public sealed class VocalComponent : Component
     public AudioParams AudioParams = AudioParams.Default.WithVolume(4f);
 
     [DataField("wilhelmProbability")]
-    public float WilhelmProbability = 0.01f;
+    public float WilhelmProbability = 0.0002f;
 
     public const float Variation = 0.125f;
 
