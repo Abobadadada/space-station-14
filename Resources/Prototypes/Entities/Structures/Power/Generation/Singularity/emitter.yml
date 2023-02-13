@@ -30,14 +30,11 @@
     - state: beam
       shader: unshaded
       visible: false
-      map: ["enum.EmitterVisualLayers.Lights"]
     - state: lock
       shader: unshaded
       visible: false
-      map: ["enum.StorageVisualLayers.Lock"]
   - type: Emitter
   - type: Gun
-    showExamineText: false
     fireRate: 10 #just has to be fast enough to keep up with upgrades
     selectedMode: SemiAuto
     availableModes:
@@ -75,6 +72,8 @@
   - type: Pullable
   - type: Rotatable
   - type: Appearance
+    visuals:
+    - type: EmitterVisualizer
   - type: Lock
     locked: false
   - type: AccessReader

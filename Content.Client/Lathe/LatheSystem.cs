@@ -8,8 +8,6 @@ namespace Content.Client.Lathe;
 
 public sealed class LatheSystem : SharedLatheSystem
 {
-    [Dependency] private readonly AppearanceSystem _appearance = default!;
-
     public override void Initialize()
     {
         base.Initialize();
@@ -22,18 +20,31 @@ public sealed class LatheSystem : SharedLatheSystem
         if (args.Sprite == null)
             return;
 
-        if (_appearance.TryGetData(uid, PowerDeviceVisuals.Powered, out bool powered, args.Component) &&
+        if (args.Component.TryGetData(PowerDeviceVisuals.Powered, out bool powered) &&
             args.Sprite.LayerMapTryGet(PowerDeviceVisualLayers.Powered, out _))
         {
             args.Sprite.LayerSetVisible(PowerDeviceVisualLayers.Powered, powered);
         }
 
         // Lathe specific stuff
-        if (_appearance.TryGetData(uid, LatheVisuals.IsRunning, out bool isRunning, args.Component))
+        if (args.Component.TryGetData(LatheVisuals.IsRunning, out bool isRunning))
         {
             var state = isRunning ? component.RunningState : component.IdleState;
             args.Sprite.LayerSetAnimationTime(LatheVisualLayers.IsRunning, 0f);
             args.Sprite.LayerSetState(LatheVisualLayers.IsRunning, state);
+        }
+
+        if (args.Component.TryGetData(LatheVisuals.IsInserting, out bool isInserting)
+            && args.Sprite.LayerMapTryGet(LatheVisualLayers.IsInserting, out var isInsertingLayer))
+        {
+            if (args.Component.TryGetData(LatheVisuals.InsertingColor, out Color color)
+                && !component.IgnoreColor)
+            {
+                args.Sprite.LayerSetColor(isInsertingLayer, color);
+            }
+
+            args.Sprite.LayerSetAnimationTime(isInsertingLayer, 0f);
+            args.Sprite.LayerSetVisible(isInsertingLayer, isInserting);
         }
     }
 
@@ -49,5 +60,6 @@ public sealed class LatheSystem : SharedLatheSystem
 
 public enum LatheVisualLayers : byte
 {
-    IsRunning
+    IsRunning,
+    IsInserting
 }

@@ -15,7 +15,7 @@
       shader: unshaded
       map: ["enum.PowerDeviceVisualLayers.Powered"]
     - state: inserting
-      map: ["enum.MaterialStorageVisualLayers.Inserting"]
+      map: ["enum.LatheVisualLayers.IsInserting"]
     - state: panel
       map: ["enum.WiresVisualLayers.MaintenancePanel"]
   - type: Appearance
@@ -74,12 +74,14 @@
       - Crowbar
       - Multitool
       - AirlockPainter
+      - MiniHoe
+      - Shovel
+      - Spade
       - CableStack
       - HandheldGPSBasic
       - TRayScanner
       - GasAnalyzer
       - UtilityBelt
-      - Pickaxe
   - type: StaticPrice
     price: 800
 
@@ -100,7 +102,7 @@
       shader: unshaded
       map: ["enum.PowerDeviceVisualLayers.Powered"]
     - state: inserting
-      map: ["enum.MaterialStorageVisualLayers.Inserting"]
+      map: ["enum.LatheVisualLayers.IsInserting"]
     - state: panel
       map: ["enum.WiresVisualLayers.MaintenancePanel"]
   - type: Appearance
@@ -173,10 +175,7 @@
       - RCDAmmo
       - HydroponicsToolScythe
       - HydroponicsToolHatchet
-      - Clippers
-      - MiniHoe
       - Shovel
-      - Spade
       - HandheldCrewMonitor
       - Scalpel
       - Retractor
@@ -321,8 +320,6 @@
       - ExosuitFabricatorMachineCircuitboard
       - ArtifactAnalyzerMachineCircuitboard
       - TraversalDistorterMachineCircuitboard
-      - BoozeDispenserMachineCircuitboard
-      - SodaDispenserMachineCircuitboard
   - type: MaterialStorage
     whitelist:
       tags:
@@ -343,7 +340,7 @@
     - state: fab-idle
       map: ["enum.LatheVisualLayers.IsRunning"]
     - state: fab-load
-      map: ["enum.MaterialStorageVisualLayers.Inserting"]
+      map: ["enum.LatheVisualLayers.IsInserting"]
     - state: fab-o
       map: ["enum.WiresVisualLayers.MaintenancePanel"]
   - type: Machine
@@ -384,7 +381,7 @@
       shader: unshaded
       map: ["enum.PowerDeviceVisualLayers.Powered"]
     - state: inserting
-      map: ["enum.MaterialStorageVisualLayers.Inserting"]
+      map: ["enum.LatheVisualLayers.IsInserting"]
     - state: panel
       map: ["enum.WiresVisualLayers.MaintenancePanel"]
   - type: Machine
@@ -440,7 +437,7 @@
       shader: unshaded
       map: ["enum.PowerDeviceVisualLayers.Powered"]
     - state: inserting
-      map: ["enum.MaterialStorageVisualLayers.Inserting"]
+      map: ["enum.LatheVisualLayers.IsInserting"]
     - state: panel
       map: ["enum.WiresVisualLayers.MaintenancePanel"]
   - type: Lathe
@@ -587,18 +584,17 @@
           shader: unshaded
           map: ["enum.PowerDeviceVisualLayers.Powered"]
         - state: inserting
-          map: ["enum.MaterialStorageVisualLayers.Inserting"]
+          map: ["enum.LatheVisualLayers.IsInserting"]
         - state: panel
           map: ["enum.WiresVisualLayers.MaintenancePanel"]
     - type: Machine
       board: OreProcessorMachineCircuitboard
     - type: MaterialStorage
-      dropOnDeconstruct: false #should drop ores instead of ingots/sheets
-      ignoreColor: true
       whitelist:
         tags:
           - Ore
     - type: Lathe
+      ignoreColor: true
       staticRecipes:
         - SheetSteel30
         - SheetGlass30

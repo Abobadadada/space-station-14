@@ -1,6 +1,4 @@
-using System.Linq;
 using Content.Client.Administration.Managers;
-using Content.Client.Administration.Systems;
 using Content.Shared.Administration;
 using Content.Shared.IdentityManagement;
 using Robust.Client.GameObjects;
@@ -9,7 +7,6 @@ using Robust.Client.UserInterface.Controls;
 using Robust.Shared.GameObjects;
 using Robust.Shared.IoC;
 using Robust.Shared.Maths;
-using Robust.Shared.Utility;
 
 namespace Content.Client.ContextMenu.UI
 {
@@ -17,11 +14,8 @@ namespace Content.Client.ContextMenu.UI
     {
         public const string StyleClassEntityMenuCountText = "contextMenuCount";
 
-        [Dependency] private readonly IClientAdminManager _adminManager = default!;
-        [Dependency] private readonly IEntityManager _entityManager = default!;
-        [Dependency] private readonly IPlayerManager _playerManager = default!;
-
-        private AdminSystem _adminSystem;
+        [Dependency] private IEntityManager _entityManager = default!;
+        [Dependency] private IPlayerManager _playerManager = default!;
 
         /// <summary>
         ///     The entity that can be accessed by interacting with this element.
@@ -43,8 +37,6 @@ namespace Content.Client.ContextMenu.UI
         {
             IoCManager.InjectDependencies(this);
 
-            _adminSystem = _entityManager.System<AdminSystem>();
-
             CountLabel = new Label { StyleClasses = { StyleClassEntityMenuCountText } };
             Icon.AddChild(new LayoutContainer() { Children = { EntityIcon, CountLabel } });
 
@@ -53,12 +45,12 @@ namespace Content.Client.ContextMenu.UI
             LayoutContainer.SetGrowVertical(CountLabel, LayoutContainer.GrowDirection.Begin);
 
             Entity = entity;
-            if (Entity == null)
-                return;
-
-            Count = 1;
-            CountLabel.Visible = false;
-            UpdateEntity();
+            if (Entity != null)
+            {
+                Count = 1;
+                CountLabel.Visible = false;
+                UpdateEntity();
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -87,19 +79,10 @@ namespace Content.Client.ContextMenu.UI
 
             EntityIcon.Sprite = _entityManager.GetComponentOrNull<ISpriteComponent>(entity);
 
-            if (_adminManager.HasFlag(AdminFlags.Admin | AdminFlags.Debug))
-            {
-                var representation = _entityManager.ToPrettyString(entity.Value);
-                var name = representation.Name;
-                var id = representation.Uid;
-                var prototype = representation.Prototype;
-                var playerName =
-                    representation.Session?.Name ??
-                    _adminSystem.PlayerList.FirstOrDefault(player => player.EntityUid == entity)?.Username;
-                var deleted = representation.Deleted;
+            var admin = IoCManager.Resolve<IClientAdminManager>();
 
-                Text = $"{name} ({id}{(representation.Prototype != null ? $", {prototype}" : "")}{(playerName != null ? $", {playerName}" : "")}){(deleted ? "D" : "")}";
-            }
+            if (admin.HasFlag(AdminFlags.Admin | AdminFlags.Debug))
+                Text = _entityManager.ToPrettyString(entity.Value);
             else
                 Text = Identity.Name(entity.Value, _entityManager, _playerManager.LocalPlayer!.ControlledEntity!);
         }

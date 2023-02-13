@@ -17,7 +17,7 @@ namespace Content.Shared.Medical.SuitSensor
         public string Job;
         public bool IsAlive;
         public int? TotalDamage;
-        public EntityCoordinates? Coordinates;
+        public MapCoordinates? Coordinates;
     }
 
     [Serializable, NetSerializable]

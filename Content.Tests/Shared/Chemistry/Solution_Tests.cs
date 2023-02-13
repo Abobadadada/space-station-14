@@ -43,7 +43,6 @@ public sealed class Solution_Tests : ContentUnitTest
         Assert.That(quantity.Int(), Is.EqualTo(0));
     }
 
-#if !DEBUG
     [Test]
     public void AddLessThanZeroReagentReturnsZero()
     {
@@ -52,7 +51,6 @@ public sealed class Solution_Tests : ContentUnitTest
 
         Assert.That(quantity.Int(), Is.EqualTo(0));
     }
-#endif
 
     [Test]
     public void AddingReagentsSumsProperly()
@@ -83,7 +81,7 @@ public sealed class Solution_Tests : ContentUnitTest
         solution.AddReagent("water", FixedPoint2.New(1000));
         solution.AddReagent("fire", FixedPoint2.New(2000));
 
-        Assert.That(solution.Volume.Int(), Is.EqualTo(3000));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(3000));
     }
 
     [Test]
@@ -97,7 +95,7 @@ public sealed class Solution_Tests : ContentUnitTest
 
         Assert.That(newSolution.GetReagentQuantity("water").Int(), Is.EqualTo(1000));
         Assert.That(newSolution.GetReagentQuantity("fire").Int(), Is.EqualTo(2000));
-        Assert.That(newSolution.Volume.Int(), Is.EqualTo(3000));
+        Assert.That(newSolution.TotalVolume.Int(), Is.EqualTo(3000));
     }
 
     [Test]
@@ -111,7 +109,7 @@ public sealed class Solution_Tests : ContentUnitTest
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(500));
         Assert.That(solution.GetReagentQuantity("fire").Int(), Is.EqualTo(2000));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(2500));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(2500));
     }
 
     [Test]
@@ -122,7 +120,7 @@ public sealed class Solution_Tests : ContentUnitTest
         solution.RemoveReagent("water", FixedPoint2.New(-100));
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(100));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(100));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(100));
     }
 
     [Test]
@@ -133,7 +131,7 @@ public sealed class Solution_Tests : ContentUnitTest
         solution.RemoveReagent("water", FixedPoint2.New(1000));
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(0));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(0));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(0));
     }
 
     [Test]
@@ -144,7 +142,7 @@ public sealed class Solution_Tests : ContentUnitTest
         solution.RemoveReagent("fire", FixedPoint2.New(1000));
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(100));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(100));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(100));
     }
 
     [Test]
@@ -156,7 +154,7 @@ public sealed class Solution_Tests : ContentUnitTest
 
         //Check that edited solution is correct
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(200));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(200));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(200));
     }
 
     [Test]
@@ -168,7 +166,7 @@ public sealed class Solution_Tests : ContentUnitTest
 
         //Check that edited solution is correct
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(0));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(0));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(0));
     }
 
     [Test]
@@ -182,7 +180,7 @@ public sealed class Solution_Tests : ContentUnitTest
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(500));
         Assert.That(solution.GetReagentQuantity("fire").Int(), Is.EqualTo(1000));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(1500));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(1500));
     }
 
     [Test]
@@ -193,7 +191,7 @@ public sealed class Solution_Tests : ContentUnitTest
         solution.RemoveSolution(FixedPoint2.New(-200));
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(800));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(800));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(800));
     }
 
     [Test]
@@ -207,11 +205,11 @@ public sealed class Solution_Tests : ContentUnitTest
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(750));
         Assert.That(solution.GetReagentQuantity("fire").Int(), Is.EqualTo(1500));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(2250));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(2250));
 
         Assert.That(splitSolution.GetReagentQuantity("water").Int(), Is.EqualTo(250));
         Assert.That(splitSolution.GetReagentQuantity("fire").Int(), Is.EqualTo(500));
-        Assert.That(splitSolution.Volume.Int(), Is.EqualTo(750));
+        Assert.That(splitSolution.TotalVolume.Int(), Is.EqualTo(750));
     }
 
     [Test]
@@ -223,13 +221,13 @@ public sealed class Solution_Tests : ContentUnitTest
 
         var splitSolution = solution.SplitSolution(FixedPoint2.New(1));
 
-        Assert.That(solution.GetReagentQuantity("water").Float(), Is.EqualTo(0.66f));
-        Assert.That(solution.GetReagentQuantity("fire").Float(), Is.EqualTo(1.34f));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(2));
+        Assert.That(solution.GetReagentQuantity("water").Float(), Is.EqualTo(0.67f));
+        Assert.That(solution.GetReagentQuantity("fire").Float(), Is.EqualTo(1.33f));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(2));
 
-        Assert.That(splitSolution.GetReagentQuantity("water").Float(), Is.EqualTo(0.34f));
-        Assert.That(splitSolution.GetReagentQuantity("fire").Float(), Is.EqualTo(0.66f));
-        Assert.That(splitSolution.Volume.Int(), Is.EqualTo(1));
+        Assert.That(splitSolution.GetReagentQuantity("water").Float(), Is.EqualTo(0.33f));
+        Assert.That(splitSolution.GetReagentQuantity("fire").Float(), Is.EqualTo(0.67f));
+        Assert.That(splitSolution.TotalVolume.Int(), Is.EqualTo(1));
     }
 
     [Test]
@@ -243,11 +241,11 @@ public sealed class Solution_Tests : ContentUnitTest
 
         Assert.That(solution.GetReagentQuantity("water").Float(), Is.EqualTo(0.33f));
         Assert.That(solution.GetReagentQuantity("fire").Float(), Is.EqualTo(0.67f));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(1));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(1));
 
         Assert.That(splitSolution.GetReagentQuantity("water").Float(), Is.EqualTo(0.67f));
         Assert.That(splitSolution.GetReagentQuantity("fire").Float(), Is.EqualTo(1.33f));
-        Assert.That(splitSolution.Volume.Int(), Is.EqualTo(2));
+        Assert.That(splitSolution.TotalVolume.Int(), Is.EqualTo(2));
     }
 
     [Test]
@@ -261,10 +259,10 @@ public sealed class Solution_Tests : ContentUnitTest
         var splitSolution = solution.SplitSolution(FixedPoint2.New(reduce));
 
         Assert.That(solution.GetReagentQuantity("water").Float(), Is.EqualTo(remainder));
-        Assert.That(solution.Volume.Float(), Is.EqualTo(remainder));
+        Assert.That(solution.TotalVolume.Float(), Is.EqualTo(remainder));
 
         Assert.That(splitSolution.GetReagentQuantity("water").Float(), Is.EqualTo(reduce));
-        Assert.That(splitSolution.Volume.Float(), Is.EqualTo(reduce));
+        Assert.That(splitSolution.TotalVolume.Float(), Is.EqualTo(reduce));
     }
 
     [Test]
@@ -282,7 +280,7 @@ public sealed class Solution_Tests : ContentUnitTest
         var splitAmount = FixedPoint2.New(5);
         var split = solutionOne.SplitSolution(splitAmount);
 
-        Assert.That(split.Volume, Is.EqualTo(splitAmount));
+        Assert.That(split.TotalVolume, Is.EqualTo(splitAmount));
     }
 
     [Test]
@@ -293,10 +291,10 @@ public sealed class Solution_Tests : ContentUnitTest
         var splitSolution = solution.SplitSolution(FixedPoint2.New(1000));
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(0));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(0));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(0));
 
         Assert.That(splitSolution.GetReagentQuantity("water").Int(), Is.EqualTo(800));
-        Assert.That(splitSolution.Volume.Int(), Is.EqualTo(800));
+        Assert.That(splitSolution.TotalVolume.Int(), Is.EqualTo(800));
     }
 
     [Test]
@@ -307,10 +305,10 @@ public sealed class Solution_Tests : ContentUnitTest
         var splitSolution = solution.SplitSolution(FixedPoint2.New(-200));
 
         Assert.That(solution.GetReagentQuantity("water").Int(), Is.EqualTo(800));
-        Assert.That(solution.Volume.Int(), Is.EqualTo(800));
+        Assert.That(solution.TotalVolume.Int(), Is.EqualTo(800));
 
         Assert.That(splitSolution.GetReagentQuantity("water").Int(), Is.EqualTo(0));
-        Assert.That(splitSolution.Volume.Int(), Is.EqualTo(0));
+        Assert.That(splitSolution.TotalVolume.Int(), Is.EqualTo(0));
     }
 
     [Test]
@@ -345,12 +343,12 @@ public sealed class Solution_Tests : ContentUnitTest
         solutionTwo.AddReagent("water", FixedPoint2.New(500));
         solutionTwo.AddReagent("earth", FixedPoint2.New(1000));
 
-        solutionOne.AddSolution(solutionTwo, null);
+        solutionOne.AddSolution(solutionTwo);
 
         Assert.That(solutionOne.GetReagentQuantity("water").Int(), Is.EqualTo(1500));
         Assert.That(solutionOne.GetReagentQuantity("fire").Int(), Is.EqualTo(2000));
         Assert.That(solutionOne.GetReagentQuantity("earth").Int(), Is.EqualTo(1000));
-        Assert.That(solutionOne.Volume.Int(), Is.EqualTo(4500));
+        Assert.That(solutionOne.TotalVolume.Int(), Is.EqualTo(4500));
     }
 
     // Tests concerning thermal energy and temperature.
@@ -361,7 +359,24 @@ public sealed class Solution_Tests : ContentUnitTest
     public void EmptySolutionHasNoHeatCapacity()
     {
         var solution = new Solution();
-        Assert.That(solution.GetHeatCapacity(null), Is.EqualTo(0.0f));
+        Assert.That(solution.HeatCapacity, Is.EqualTo(0.0f));
+    }
+
+    [Test]
+    public void EmptySolutionHasNoThermalEnergy()
+    {
+        var solution = new Solution();
+        Assert.That(solution.ThermalEnergy, Is.EqualTo(0.0f));
+    }
+
+    [Test]
+    public void AddReagentToEmptySolutionSetsTemperature()
+    {
+        const float testTemp = 100.0f;
+
+        var solution = new Solution();
+        solution.AddReagent("water", FixedPoint2.New(100), testTemp);
+        Assert.That(solution.Temperature, Is.EqualTo(testTemp));
     }
 
     [Test]
@@ -369,7 +384,8 @@ public sealed class Solution_Tests : ContentUnitTest
     {
         const float initialTemp = 100.0f;
 
-        var solution = new Solution("water", FixedPoint2.New(100)) { Temperature = initialTemp };
+        var solution = new Solution();
+        solution.AddReagent("water", FixedPoint2.New(100), initialTemp);
 
         solution.AddReagent("water", FixedPoint2.New(100));
         Assert.That(solution.Temperature, Is.EqualTo(initialTemp));
@@ -392,7 +408,7 @@ public sealed class Solution_Tests : ContentUnitTest
         solutionTwo.AddReagent("earth", FixedPoint2.New(100));
         solutionTwo.Temperature = initialTemp;
 
-        solutionOne.AddSolution(solutionTwo, null);
+        solutionOne.AddSolution(solutionTwo);
         Assert.That(solutionOne.Temperature, Is.EqualTo(initialTemp));
     }
 
@@ -401,7 +417,8 @@ public sealed class Solution_Tests : ContentUnitTest
     {
         const float initialTemp = 100.0f;
 
-        var solution = new Solution("water", FixedPoint2.New(100)) { Temperature = initialTemp };
+        var solution = new Solution();
+        solution.AddReagent("water", FixedPoint2.New(100), initialTemp);
         solution.RemoveReagent("water", FixedPoint2.New(50));
         Assert.That(solution.Temperature, Is.EqualTo(initialTemp));
     }
@@ -411,7 +428,8 @@ public sealed class Solution_Tests : ContentUnitTest
     {
         const float initialTemp = 100.0f;
 
-        var solution = new Solution("water", FixedPoint2.New(100)) { Temperature = initialTemp };
+        var solution = new Solution();
+        solution.AddReagent("water", FixedPoint2.New(100), initialTemp);
         solution.RemoveSolution(FixedPoint2.New(50));
         Assert.That(solution.Temperature, Is.EqualTo(initialTemp));
     }
@@ -421,9 +439,44 @@ public sealed class Solution_Tests : ContentUnitTest
     {
         const float initialTemp = 100.0f;
 
-        var solution = new Solution("water", FixedPoint2.New(100)) { Temperature = initialTemp };
+        var solution = new Solution();
+        solution.AddReagent("water", FixedPoint2.New(100), initialTemp);
         solution.SplitSolution(FixedPoint2.New(50));
         Assert.That(solution.Temperature, Is.EqualTo(initialTemp));
+    }
+
+    [Test]
+    public void AddReagentWithSetTemperatureAdjustsTemperature()
+    {
+        const float temp = 100.0f;
+
+        var solution = new Solution();
+        solution.AddReagent("water", FixedPoint2.New(100), temp * 1);
+        Assert.That(solution.Temperature, Is.EqualTo(temp * 1));
+
+        solution.AddReagent("water", FixedPoint2.New(100), temp * 3);
+        Assert.That(solution.Temperature, Is.EqualTo(temp * 2));
+
+        solution.AddReagent("earth", FixedPoint2.New(100), temp * 5);
+        Assert.That(solution.Temperature, Is.EqualTo(temp * 3));
+    }
+
+    [Test]
+    public void AddSolutionCombinesThermalEnergy()
+    {
+        const float initialTemp = 100.0f;
+
+        var solutionOne = new Solution();
+        solutionOne.AddReagent("water", FixedPoint2.New(100), initialTemp);
+
+        var solutionTwo = new Solution();
+        solutionTwo.AddReagent("water", FixedPoint2.New(100), initialTemp);
+        solutionTwo.AddReagent("earth", FixedPoint2.New(100));
+
+        var thermalEnergyOne = solutionOne.ThermalEnergy;
+        var thermalEnergyTwo = solutionTwo.ThermalEnergy;
+        solutionOne.AddSolution(solutionTwo);
+        Assert.That(solutionOne.ThermalEnergy, Is.EqualTo(thermalEnergyOne + thermalEnergyTwo));
     }
 
     #endregion Thermal Energy and Temperature

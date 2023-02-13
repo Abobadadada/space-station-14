@@ -1,4 +1,4 @@
-job-name-warden = warden
+﻿job-name-warden = warden
 job-name-security = security officer
 job-name-cadet = security cadet
 job-name-hos = head of security
@@ -40,8 +40,6 @@ job-name-ertmedic = ERT medic
 job-name-ertjanitor = ERT janitor
 job-name-boxer = boxer
 job-name-zookeeper = zookeeper
-job-name-borg = station borg
-job-name-ai = station AI
 
 # Role timers - Make these alphabetical or I cut you
 JobAtmosphericTechnician = atmospheric technician

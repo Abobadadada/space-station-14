@@ -5,23 +5,15 @@ using Content.Shared.Bed.Sleep;
 
 namespace Content.Server.Bed.Sleep
 {
-    public abstract class SharedSleepingSystem : EntitySystem
+    public sealed class SharedSleepingSystem : EntitySystem
     {
         [Dependency] private readonly SharedBlindingSystem _blindingSystem = default!;
-
         public override void Initialize()
         {
             base.Initialize();
             SubscribeLocalEvent<SleepingComponent, ComponentInit>(OnInit);
             SubscribeLocalEvent<SleepingComponent, ComponentShutdown>(OnShutdown);
             SubscribeLocalEvent<SleepingComponent, SpeakAttemptEvent>(OnSpeakAttempt);
-            SubscribeLocalEvent<SleepingComponent, EntityUnpausedEvent>(OnSleepUnpaused);
-        }
-
-        private void OnSleepUnpaused(EntityUid uid, SleepingComponent component, ref EntityUnpausedEvent args)
-        {
-            component.CoolDownEnd += args.PausedTime;
-            Dirty(component);
         }
 
         private void OnInit(EntityUid uid, SleepingComponent component, ComponentInit args)

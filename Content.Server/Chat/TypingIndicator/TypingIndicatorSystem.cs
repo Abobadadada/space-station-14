@@ -1,6 +1,7 @@
 using Content.Shared.ActionBlocker;
 using Content.Shared.Chat.TypingIndicator;
 using Robust.Server.GameObjects;
+using Robust.Shared.Players;
 
 namespace Content.Server.Chat.TypingIndicator;
 

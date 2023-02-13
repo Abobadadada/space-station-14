@@ -15,8 +15,3 @@
     emagPack: BoozeDispenserEmagInventory
   - type: Transform
     noRot: false 
-  - type: Machine
-    board: BoozeDispenserMachineCircuitboard
-  - type: Wires
-    BoardName: "BoozeDispenser"
-    LayoutId: BoozeDispenser

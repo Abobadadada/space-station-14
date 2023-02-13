@@ -80,7 +80,7 @@ namespace Content.Shared.SubFloor
             }
         }
 
-        private void OnTileChanged(ref TileChangedEvent args)
+        private void OnTileChanged(TileChangedEvent args)
         {
             if (args.OldTile.IsEmpty)
                 return; // Nothing is anchored here anyways.

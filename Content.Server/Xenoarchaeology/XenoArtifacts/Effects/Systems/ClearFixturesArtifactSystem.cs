@@ -2,35 +2,35 @@
 using Content.Server.Xenoarchaeology.XenoArtifacts.Events;
 using Content.Shared.Physics;
 using Robust.Shared.Physics;
-using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Dynamics;
-using Robust.Shared.Physics.Systems;
 
 namespace Content.Server.Xenoarchaeology.XenoArtifacts.Effects.Systems;
 
 /// <summary>
 ///     Handles allowing activated artifacts to phase through walls.
 /// </summary>
-public sealed class PhasingArtifactSystem : EntitySystem
+public sealed class ClearFixturesArtifactSystem : EntitySystem
 {
-    [Dependency] private readonly SharedPhysicsSystem _physics = default!;
-
     /// <inheritdoc/>
     public override void Initialize()
     {
         base.Initialize();
 
-        SubscribeLocalEvent<PhasingArtifactComponent, ArtifactActivatedEvent>(OnActivate);
+        SubscribeLocalEvent<ClearFixturesArtifactComponent, ArtifactActivatedEvent>(OnActivate);
     }
 
-    private void OnActivate(EntityUid uid, PhasingArtifactComponent component, ArtifactActivatedEvent args)
+    private void OnActivate(EntityUid uid, ClearFixturesArtifactComponent component, ArtifactActivatedEvent args)
     {
-        if (!TryComp<FixturesComponent>(uid, out var fixtures) || !TryComp<PhysicsComponent>(uid, out var phys))
+        if (!TryComp<FixturesComponent>(uid, out var fixtures))
             return;
 
         foreach (var (_, fixture) in fixtures.Fixtures)
         {
-            _physics.SetHard(fixture, false, fixtures);
+            if (!fixture.Hard)
+                continue;
+
+            fixture.CollisionLayer = (int) CollisionGroup.None;
+            fixture.CollisionMask = (int) CollisionGroup.None;
         }
     }
 }

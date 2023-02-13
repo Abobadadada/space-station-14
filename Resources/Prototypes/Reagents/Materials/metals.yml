@@ -1,13 +1,13 @@
 - type: material
   id: Steel
-  stackEntity: SheetSteel1
+  stack: Steel
   name: materials-steel
   icon: { sprite: Objects/Materials/Sheets/metal.rsi, state: steel }
   price: 0.05
 
 - type: material
   id: Gold
-  stackEntity: IngotGold1
+  stack: Gold
   name: materials-gold
   icon: { sprite: Objects/Materials/ingots.rsi, state: gold }
   color: "#FFD700"
@@ -15,7 +15,7 @@
 
 - type: material
   id: Silver
-  stackEntity: IngotSilver1
+  stack: Silver
   name: materials-silver
   icon: { sprite: Objects/Materials/ingots.rsi, state: silver }
   color: "#C0C0C0"
@@ -23,7 +23,7 @@
 
 - type: material
   id: Plasteel
-  stackEntity: SheetPlasteel1
+  stack: Plasteel
   name: materials-plasteel
   icon: { sprite: Objects/Materials/Sheets/metal.rsi, state: plasteel }
   color: "#696969" #Okay, this is epic

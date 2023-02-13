@@ -48,10 +48,12 @@ public sealed class CrematoriumSystem : EntitySystem
         }
         if (_appearance.TryGetData<bool>(uid, StorageVisuals.HasContents, out var hasContents, appearance) && hasContents)
         {
-        if (appearance.TryGetData(StorageVisuals.HasContents, out bool hasContents) && hasContents)
             args.PushMarkup(Loc.GetString("crematorium-entity-storage-component-on-examine-details-has-contents"));
+        }
         else
+        {
             args.PushMarkup(Loc.GetString("crematorium-entity-storage-component-on-examine-details-empty"));
+        }
     }
 
     private void OnAttemptOpen(EntityUid uid, ActiveCrematoriumComponent component, ref StorageOpenAttemptEvent args)

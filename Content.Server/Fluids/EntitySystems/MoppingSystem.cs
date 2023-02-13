@@ -88,13 +88,13 @@ public sealed class MoppingSystem : SharedMoppingSystem
     /// </summary>
     private bool TryCreatePuddle(EntityUid user, EntityCoordinates clickLocation, AbsorbentComponent absorbent, Solution absorberSoln)
     {
-        if (absorberSoln.Volume <= 0)
+        if (absorberSoln.CurrentVolume <= 0)
             return false;
 
         if (!_mapManager.TryGetGrid(clickLocation.GetGridUid(EntityManager), out var mapGrid))
             return false;
 
-        var releaseAmount = FixedPoint2.Min(absorbent.ResidueAmount, absorberSoln.Volume);
+        var releaseAmount = FixedPoint2.Min(absorbent.ResidueAmount, absorberSoln.CurrentVolume);
         var releasedSolution = _solutionSystem.SplitSolution(absorbent.Owner, absorberSoln, releaseAmount);
         _spillableSystem.SpillAt(mapGrid.GetTileRef(clickLocation), releasedSolution, PuddlePrototypeId);
         _popups.PopupEntity(Loc.GetString("mopping-system-release-to-floor"), user, user);
@@ -112,7 +112,7 @@ public sealed class MoppingSystem : SharedMoppingSystem
         if (!_solutionSystem.TryGetDrainableSolution(target, out var drainableSolution))
             return false;
 
-        if (drainableSolution.Volume <= 0)
+        if (drainableSolution.CurrentVolume <= 0)
         {
             var msg = Loc.GetString("mopping-system-target-container-empty", ("target", target));
             _popups.PopupEntity(msg, user, user);
@@ -121,7 +121,7 @@ public sealed class MoppingSystem : SharedMoppingSystem
 
         // Let's transfer up to to half the tool's available capacity to the tool.
         var quantity = FixedPoint2.Max(component.PickupAmount, absorberSoln.AvailableVolume / 2);
-        quantity = FixedPoint2.Min(quantity, drainableSolution.Volume);
+        quantity = FixedPoint2.Min(quantity, drainableSolution.CurrentVolume);
 
         DoMopInteraction(user, used, target, component, drainable.Solution, quantity, 1, "mopping-system-drainable-success", component.TransferSound);
         return true;
@@ -132,7 +132,7 @@ public sealed class MoppingSystem : SharedMoppingSystem
     /// </summary>
     private bool TryEmptyAbsorber(EntityUid user, EntityUid used, EntityUid target, AbsorbentComponent component, Solution absorberSoln)
     {
-        if (absorberSoln.Volume <= 0 || !TryComp(target, out RefillableSolutionComponent? refillable))
+        if (absorberSoln.CurrentVolume <= 0 || !TryComp(target, out RefillableSolutionComponent? refillable))
             return false;
 
         if (!_solutionSystem.TryGetRefillableSolution(target, out var targetSolution))
@@ -156,7 +156,7 @@ public sealed class MoppingSystem : SharedMoppingSystem
         }
 
         float delay;
-        FixedPoint2 quantity = absorberSoln.Volume;
+        FixedPoint2 quantity = absorberSoln.CurrentVolume;
 
         // TODO this really needs cleaning up. Less magic numbers, more data-fields.
 
@@ -199,7 +199,7 @@ public sealed class MoppingSystem : SharedMoppingSystem
         if (!TryComp(target, out PuddleComponent? puddle))
             return false;
 
-        if (!_solutionSystem.TryGetSolution(target, puddle.SolutionName, out var puddleSolution) || puddleSolution.Volume <= 0)
+        if (!_solutionSystem.TryGetSolution(target, puddle.SolutionName, out var puddleSolution) || puddleSolution.TotalVolume <= 0)
             return false;
 
         FixedPoint2 quantity;
@@ -214,12 +214,12 @@ public sealed class MoppingSystem : SharedMoppingSystem
         }
 
         // Can our absorber even absorb any liquid?
-        if (puddleSolution.Volume <= lowerLimit)
+        if (puddleSolution.TotalVolume <= lowerLimit)
         {
             // Cannot absorb any more liquid. So clearly the user wants to add liquid to the puddle... right?
             // This is the old behavior and I CBF fixing this, for the record I don't like this.
 
-            quantity = FixedPoint2.Min(absorber.ResidueAmount, absorberSoln.Volume);
+            quantity = FixedPoint2.Min(absorber.ResidueAmount, absorberSoln.CurrentVolume);
             if (quantity <= 0)
                 return false;
 
@@ -236,7 +236,7 @@ public sealed class MoppingSystem : SharedMoppingSystem
             return true;
         }
 
-        quantity = FixedPoint2.Min(absorber.PickupAmount, puddleSolution.Volume - lowerLimit, absorberSoln.AvailableVolume);
+        quantity = FixedPoint2.Min(absorber.PickupAmount, puddleSolution.TotalVolume - lowerLimit, absorberSoln.AvailableVolume);
         if (quantity <= 0)
             return false;
 

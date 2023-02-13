@@ -88,7 +88,7 @@
 - type: department
   id: Synthetics
   description: department-synthetics-description
-  color: "#ADD8E6"
+  color: "#32CD32"
   roles:
   - AI
   - Borg

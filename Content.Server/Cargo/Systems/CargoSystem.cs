@@ -11,7 +11,6 @@ public sealed partial class CargoSystem : SharedCargoSystem
 {
     [Dependency] private readonly IPrototypeManager _protoMan = default!;
     [Dependency] private readonly ItemSlotsSystem _slots = default!;
-    [Dependency] private readonly SharedAudioSystem _audio = default!;
 
     private ISawmill _sawmill = default!;
 
@@ -46,8 +45,8 @@ public sealed partial class CargoSystem : SharedCargoSystem
     }
 
     // please don't delete this thank you
-    public void UpdateBankAccount(StationBankAccountComponent component, int balanceAdded)
+    public void UpdateBankAccount(StationBankAccountComponent component, int BalanceAdded)
     {
-        component.Balance += balanceAdded;
+        component.Balance += BalanceAdded;
     }
 }

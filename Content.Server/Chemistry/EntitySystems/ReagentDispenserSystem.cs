@@ -6,7 +6,6 @@ using Content.Shared.Chemistry.Dispenser;
 using Content.Shared.Containers.ItemSlots;
 using Content.Shared.Database;
 using Content.Shared.Emag.Systems;
-using Content.Shared.FixedPoint;
 using JetBrains.Annotations;
 using Robust.Server.GameObjects;
 using Robust.Shared.Audio;
@@ -63,7 +62,7 @@ namespace Content.Server.Chemistry.EntitySystems
             if (_solutionContainerSystem.TryGetFitsInDispenser(container.Value, out var solution))
             {
                 var reagents = solution.Contents.Select(reagent => (reagent.ReagentId, reagent.Quantity)).ToList();
-                return new ContainerInfo(Name(container.Value), true, solution.Volume, solution.MaxVolume, reagents);
+                return new ContainerInfo(Name(container.Value), true, solution.CurrentVolume, solution.MaxVolume, reagents);
             }
 
             return null;

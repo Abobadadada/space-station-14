@@ -1,9 +1,7 @@
-using Content.Client.ContextMenu.UI;
 using Content.Client.Verbs;
 using Content.Shared.CombatMode;
 using Content.Shared.Targeting;
 using Robust.Client.Player;
-using Robust.Client.UserInterface;
 
 namespace Content.Client.CombatMode
 {
@@ -40,7 +38,8 @@ namespace Content.Client.CombatMode
                 return;
             }
 
-            IoCManager.Resolve<IUserInterfaceManager>().GetUIController<ContextMenuUIController>().Close();
+            var verbs = IoCManager.Resolve<IEntitySystemManager>().GetEntitySystem<VerbSystem>();
+            verbs.CloseAllMenus();
         }
     }
 }

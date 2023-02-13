@@ -40,12 +40,6 @@
         key: KnockedDown
         time: 3
         type: Remove
-    Medicine:
-      effects:
-      - !type:ResetNarcolepsy
-        conditions:
-        - !type:ReagentThreshold
-          min: 5
 
 - type: reagent
   id: Ephedrine
@@ -85,12 +79,6 @@
         messages: ["ephedrine-effect-tight-pain", "ephedrine-effect-heart-pounds"]
         type: Local
         probability: 0.05
-    Medicine:
-      effects:
-      - !type:ResetNarcolepsy
-        conditions:
-        - !type:ReagentThreshold
-          min: 10
 
 - type: reagent
   id: THC

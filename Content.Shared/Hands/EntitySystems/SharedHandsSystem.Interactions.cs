@@ -77,9 +77,6 @@ public abstract partial class SharedHandsSystem : EntitySystem
         if (!TryComp(session?.AttachedEntity, out SharedHandsComponent? component))
             return;
 
-        if (!_actionBlocker.CanInteract(session.AttachedEntity.Value, null))
-            return;
-
         if (component.ActiveHand == null || component.Hands.Count < 2)
             return;
 

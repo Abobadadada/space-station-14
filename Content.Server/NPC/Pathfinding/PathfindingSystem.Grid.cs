@@ -53,7 +53,7 @@ public sealed partial class PathfindingSystem
         SubscribeLocalEvent<MoveEvent>(OnMoveEvent);
     }
 
-    private void OnTileChange(ref TileChangedEvent ev)
+    private void OnTileChange(TileChangedEvent ev)
     {
         if (ev.OldTile.IsEmpty == ev.NewTile.Tile.IsEmpty)
             return;

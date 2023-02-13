@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using System.Linq;
 using Content.Client.CombatMode;
 using Content.Client.Examine;
 using Content.Client.Gameplay;
 using Content.Client.Verbs;
-using Content.Client.Verbs.UI;
+using Content.Client.Viewport;
 using Content.Shared.CCVar;
 using Content.Shared.CombatMode;
 using Content.Shared.Examine;
@@ -14,11 +15,14 @@ using Robust.Client.Input;
 using Robust.Client.Player;
 using Robust.Client.State;
 using Robust.Client.UserInterface;
-using Robust.Client.UserInterface.Controllers;
 using Robust.Shared.Configuration;
+using Robust.Shared.GameObjects;
 using Robust.Shared.Input;
 using Robust.Shared.Input.Binding;
+using Robust.Shared.IoC;
+using Robust.Shared.Log;
 using Robust.Shared.Map;
+using Robust.Shared.Maths;
 using Robust.Shared.Timing;
 
 namespace Content.Client.ContextMenu.UI
@@ -27,11 +31,11 @@ namespace Content.Client.ContextMenu.UI
     ///     This class handles the displaying of the entity context menu.
     /// </summary>
     /// <remarks>
-    ///     This also provides functions to get
+    ///     In addition to the normal <see cref="ContextMenuPresenter"/> functionality, this also provides functions get
     ///     a list of entities near the mouse position, add them to the context menu grouped by prototypes, and remove
     ///     them from the menu as they move out of sight.
     /// </remarks>
-    public sealed partial class EntityMenuUIController : UIController, IOnStateEntered<GameplayState>, IOnStateExited<GameplayState>
+    public sealed partial class EntityMenuPresenter : ContextMenuPresenter
     {
         [Dependency] private readonly IEntitySystemManager _systemManager = default!;
         [Dependency] private readonly IEntityManager _entityManager = default!;
@@ -42,15 +46,11 @@ namespace Content.Client.ContextMenu.UI
         [Dependency] private readonly IGameTiming _gameTiming = default!;
         [Dependency] private readonly IUserInterfaceManager _userInterfaceManager = default!;
         [Dependency] private readonly IEyeManager _eyeManager = default!;
-        [Dependency] private readonly ContextMenuUIController _context = default!;
-        [Dependency] private readonly VerbMenuUIController _verb = default!;
 
-        [UISystemDependency] private readonly VerbSystem _verbSystem = default!;
-        [UISystemDependency] private readonly ExamineSystem _examineSystem = default!;
-        [UISystemDependency] private readonly TransformSystem _xform = default!;
-        [UISystemDependency] private readonly CombatModeSystem _combatMode = default!;
-
-        private bool _updating;
+        private readonly VerbSystem _verbSystem;
+        private readonly ExamineSystem _examineSystem;
+        private readonly TransformSystem _xform;
+        private readonly SharedCombatModeSystem _combatMode;
 
         /// <summary>
         ///     This maps the currently displayed entities to the actual GUI elements.
@@ -60,26 +60,27 @@ namespace Content.Client.ContextMenu.UI
         /// </remarks>
         public Dictionary<EntityUid, EntityMenuElement> Elements = new();
 
-        public void OnStateEntered(GameplayState state)
+        public EntityMenuPresenter(VerbSystem verbSystem) : base()
         {
-            _updating = true;
+            IoCManager.InjectDependencies(this);
+
+            _verbSystem = verbSystem;
+            _examineSystem = _entityManager.EntitySysManager.GetEntitySystem<ExamineSystem>();
+            _combatMode = _entityManager.EntitySysManager.GetEntitySystem<CombatModeSystem>();
+            _xform = _entityManager.EntitySysManager.GetEntitySystem<TransformSystem>();
+
             _cfg.OnValueChanged(CCVars.EntityMenuGroupingType, OnGroupingChanged, true);
-            _context.OnContextMouseEntered += OnMouseEntered;
-            _context.OnContextKeyEvent += OnKeyBindDown;
 
             CommandBinds.Builder
                 .Bind(EngineKeyFunctions.UseSecondary,  new PointerInputCmdHandler(HandleOpenEntityMenu, outsidePrediction: true))
-                .Register<EntityMenuUIController>();
+                .Register<EntityMenuPresenter>();
         }
 
-        public void OnStateExited(GameplayState state)
+        public override void Dispose()
         {
-            _updating = false;
+            base.Dispose();
             Elements.Clear();
-            _cfg.UnsubValueChanged(CCVars.EntityMenuGroupingType, OnGroupingChanged);
-            _context.OnContextMouseEntered -= OnMouseEntered;
-            _context.OnContextKeyEvent -= OnKeyBindDown;
-            CommandBinds.Unregister<EntityMenuUIController>();
+            CommandBinds.Unregister<EntityMenuPresenter>();
         }
 
         /// <summary>
@@ -88,8 +89,8 @@ namespace Content.Client.ContextMenu.UI
         public void OpenRootMenu(List<EntityUid> entities)
         {
             // close any old menus first.
-            if (_context.RootMenu.Visible)
-                _context.Close();
+            if (RootMenu.Visible)
+                Close();
 
             var entitySpriteStates = GroupEntities(entities);
             var orderedStates = entitySpriteStates.ToList();
@@ -98,30 +99,12 @@ namespace Content.Client.ContextMenu.UI
             AddToUI(orderedStates);
 
             var box = UIBox2.FromDimensions(_userInterfaceManager.MousePositionScaled.Position, (1, 1));
-            _context.RootMenu.Open(box);
+            RootMenu.Open(box);
         }
 
-        public void OnMouseEntered(ContextMenuElement element)
+        public override void OnKeyBindDown(ContextMenuElement element, GUIBoundKeyEventArgs args)
         {
-            if (element is not EntityMenuElement entityElement)
-                return;
-
-            // get an entity associated with this element
-            var entity = entityElement.Entity;
-
-            // if there is none, this is a group, so don't open verbs
-            if (entity == null)
-                return;
-
-            // Deleted() automatically checks for null & existence.
-            if (_entityManager.Deleted(entity))
-                return;
-
-            _verb.OpenVerbMenu(entity.Value, popup: element.SubMenu);
-        }
-
-        public void OnKeyBindDown(ContextMenuElement element, GUIBoundKeyEventArgs args)
-        {
+            base.OnKeyBindDown(element, args);
             if (element is not EntityMenuElement entityElement)
                 return;
 
@@ -132,6 +115,14 @@ namespace Content.Client.ContextMenu.UI
             // Deleted() automatically checks for null & existence.
             if (_entityManager.Deleted(entity))
                 return;
+
+            // open verb menu?
+            if (args.Function == EngineKeyFunctions.UseSecondary)
+            {
+                _verbSystem.VerbMenu.OpenVerbMenu(entity.Value);
+                args.Handle();
+                return;
+            }
 
             // do examination?
             if (args.Function == ContentKeyFunctions.ExamineEntity)
@@ -163,8 +154,9 @@ namespace Content.Client.ContextMenu.UI
                     inputSys.HandleInputCommand(session, func, message);
                 }
 
-                _context.Close();
+                _verbSystem.CloseAllMenus();
                 args.Handle();
+                return;
             }
         }
 
@@ -190,12 +182,9 @@ namespace Content.Client.ContextMenu.UI
         /// <summary>
         ///     Check that entities in the context menu are still visible. If not, remove them from the context menu.
         /// </summary>
-        public override void FrameUpdate(FrameEventArgs args)
+        public void Update()
         {
-            if (!_updating || _context.RootMenu == null)
-                return;
-
-            if (!_context.RootMenu.Visible)
+            if (!RootMenu.Visible)
                 return;
 
             if (_playerManager.LocalPlayer?.ControlledEntity is not { } player ||
@@ -240,8 +229,7 @@ namespace Content.Client.ContextMenu.UI
                 foreach (var entity in entityGroups[0])
                 {
                     var element = new EntityMenuElement(entity);
-                    element.SubMenu = new ContextMenuPopup(_context, element);
-                    _context.AddElement(_context.RootMenu, element);
+                    AddElement(RootMenu, element);
                     Elements.TryAdd(entity, element);
                 }
                 return;
@@ -257,8 +245,7 @@ namespace Content.Client.ContextMenu.UI
 
                 // this group only has a single entity, add a simple menu element
                 var element = new EntityMenuElement(group[0]);
-                element.SubMenu = new ContextMenuPopup(_context, element);
-                _context.AddElement(_context.RootMenu, element);
+                AddElement(RootMenu, element);
                 Elements.TryAdd(group[0], element);
             }
 
@@ -270,18 +257,17 @@ namespace Content.Client.ContextMenu.UI
         private void AddGroupToUI(List<EntityUid> group)
         {
             EntityMenuElement element = new();
-            ContextMenuPopup subMenu = new(_context, element);
+            ContextMenuPopup subMenu = new(this, element);
 
             foreach (var entity in group)
             {
                 var subElement = new EntityMenuElement(entity);
-                subElement.SubMenu = new ContextMenuPopup(_context, subElement);
-                _context.AddElement(subMenu, subElement);
+                AddElement(subMenu, subElement);
                 Elements.TryAdd(entity, subElement);
             }
 
             UpdateElement(element);
-            _context.AddElement(_context.RootMenu, element);
+            AddElement(RootMenu, element);
         }
 
         /// <summary>
@@ -305,9 +291,13 @@ namespace Content.Client.ContextMenu.UI
             if (parent is EntityMenuElement e)
                 UpdateElement(e);
 
+            // if the verb menu is open and targeting this entity, close it.
+            if (_verbSystem.VerbMenu.CurrentTarget == entity)
+                _verbSystem.VerbMenu.Close();
+
             // If this was the last entity, close the entity menu
-            if (_context.RootMenu.MenuBody.ChildCount == 0)
-                _context.Close();
+            if (RootMenu.MenuBody.ChildCount == 0)
+                Close();
         }
 
         /// <summary>
@@ -385,6 +375,18 @@ namespace Content.Client.ContextMenu.UI
             }
 
             return null;
+        }
+
+        public override void OpenSubMenu(ContextMenuElement element)
+        {
+            base.OpenSubMenu(element);
+
+            // In case the verb menu is currently open, ensure that it is shown ABOVE the entity menu.
+            if (_verbSystem.VerbMenu.Menus.TryPeek(out var menu) && menu.Visible)
+            {
+                menu.ParentElement?.ParentMenu?.SetPositionLast();
+                menu.SetPositionLast();
+            }
         }
     }
 }

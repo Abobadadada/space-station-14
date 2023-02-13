@@ -59,7 +59,7 @@ public sealed partial class AtmosphereSystem : SharedAtmosphereSystem
         ShutdownCommands();
     }
 
-    private void OnTileChanged(ref TileChangedEvent ev)
+    private void OnTileChanged(TileChangedEvent ev)
     {
         InvalidateTile(ev.NewTile.GridUid, ev.NewTile.GridIndices);
     }

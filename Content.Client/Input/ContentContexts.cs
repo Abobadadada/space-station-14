@@ -96,6 +96,7 @@ namespace Content.Client.Input
             common.AddFunction(ContentKeyFunctions.OpenTileSpawnWindow);
             common.AddFunction(ContentKeyFunctions.OpenDecalSpawnWindow);
             common.AddFunction(ContentKeyFunctions.OpenAdminMenu);
+<<<<<<< HEAD
 
             var AI = contexts.New("AI", "common");
             AI.AddFunction(EngineKeyFunctions.MoveUp);
@@ -116,6 +117,8 @@ namespace Content.Client.Input
 
             common.AddFunction(ContentKeyFunctions.OpenActionsMenu);
             common.RemoveFunction(ContentKeyFunctions.Point);
+=======
+>>>>>>> parent of 6bbdd64e7 (da merge)
         }
     }
 }

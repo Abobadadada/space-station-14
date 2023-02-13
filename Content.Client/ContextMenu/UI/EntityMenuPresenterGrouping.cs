@@ -1,17 +1,16 @@
 using Content.Shared.IdentityManagement;
 using Robust.Client.GameObjects;
 using System.Linq;
-using Robust.Client.UserInterface.Controllers;
 
 namespace Content.Client.ContextMenu.UI
 {
-    public sealed partial class EntityMenuUIController
+    public sealed partial class EntityMenuPresenter : ContextMenuPresenter
     {
         public const int GroupingTypesCount = 2;
         private int GroupingContextMenuType { get; set; }
         public void OnGroupingChanged(int obj)
         {
-            _context.Close();
+            Close();
             GroupingContextMenuType = obj;
         }
 

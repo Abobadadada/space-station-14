@@ -1,4 +1,4 @@
-using System.Threading;
+﻿using System.Threading;
 using Content.Server.Atmos;
 using Content.Server.Atmos.EntitySystems;
 using Content.Server.Atmos.Piping.Components;
@@ -204,7 +204,7 @@ public sealed partial class CryoPodSystem: SharedCryoPodSystem
         if (args.IsInDetailsRange && container != null && _solutionContainerSystem.TryGetFitsInDispenser(container.Value, out var containerSolution))
         {
             args.PushMarkup(Loc.GetString("cryo-pod-examine", ("beaker", Name(container.Value))));
-            if (containerSolution.Volume == 0)
+            if (containerSolution.CurrentVolume == 0)
             {
                 args.PushMarkup(Loc.GetString("cryo-pod-empty-beaker"));
             }

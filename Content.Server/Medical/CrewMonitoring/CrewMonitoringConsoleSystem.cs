@@ -3,7 +3,6 @@ using Content.Server.DeviceNetwork.Systems;
 using Content.Server.Medical.SuitSensors;
 using Content.Server.UserInterface;
 using Content.Shared.Medical.CrewMonitoring;
-using Robust.Shared.Map;
 using Robust.Shared.Timing;
 
 namespace Content.Server.Medical.CrewMonitoring
@@ -67,9 +66,9 @@ namespace Content.Server.Medical.CrewMonitoring
                 return;
 
             // update all sensors info
-            var xform = Transform(uid);
+            var worldPos = _xform.GetWorldPosition(uid);
             var allSensors = component.ConnectedSensors.Values.ToList();
-            var uiState = new CrewMonitoringState(allSensors, xform.WorldPosition, component.Snap, component.Precision);
+            var uiState = new CrewMonitoringState(allSensors, worldPos, component.Snap, component.Precision);
             ui.SetState(uiState);
         }
 

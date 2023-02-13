@@ -163,16 +163,6 @@ public sealed class PricingSystem : EntitySystem
         return price;
     }
 
-    public double GetMaterialPrice(MaterialComponent component)
-    {
-        double price = 0;
-        foreach (var (id, quantity) in component.Materials)
-        {
-            price += _prototypeManager.Index<MaterialPrototype>(id).Price * quantity;
-        }
-        return price;
-    }
-
     /// <summary>
     /// Appraises an entity, returning it's price.
     /// </summary>
@@ -191,11 +181,10 @@ public sealed class PricingSystem : EntitySystem
 
         if (TryComp<MaterialComponent>(uid, out var material) && !HasComp<StackPriceComponent>(uid))
         {
-            var matPrice = GetMaterialPrice(material);
             if (TryComp<StackComponent>(uid, out var stack))
-                matPrice *= stack.Count;
-
-            ev.Price += matPrice;
+                ev.Price += stack.Count * material.Materials.Sum(x => x.Price * material._materials[x.ID]);
+            else
+                ev.Price += material.Materials.Sum(x => x.Price);
         }
 
         if (TryComp<ContainerManagerComponent>(uid, out var containers))

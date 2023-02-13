@@ -53,22 +53,16 @@ public sealed class ClothingSpeedModifierSystem : EntitySystem
 
     private void OnHandleState(EntityUid uid, ClothingSpeedModifierComponent component, ref ComponentHandleState args)
     {
-        if (args.Current is not ClothingSpeedModifierComponentState state)
-            return;
-
-        var diff = component.Enabled != state.Enabled ||
-                   !MathHelper.CloseTo(component.SprintModifier, state.SprintModifier) ||
-                   !MathHelper.CloseTo(component.WalkModifier, state.WalkModifier);
-
-        component.WalkModifier = state.WalkModifier;
-        component.SprintModifier = state.SprintModifier;
-        component.Enabled = state.Enabled;
-
-        // Avoid raising the event for the container if nothing changed.
-        // We'll still set the values in case they're slightly different but within tolerance.
-        if (diff && _container.TryGetContainingContainer(uid, out var container))
+        if (args.Current is ClothingSpeedModifierComponentState state)
         {
-            _movementSpeed.RefreshMovementSpeedModifiers(container.Owner);
+            component.WalkModifier = state.WalkModifier;
+            component.SprintModifier = state.SprintModifier;
+            component.Enabled = state.Enabled;
+
+            if (_container.TryGetContainingContainer(uid, out var container))
+            {
+                _movementSpeed.RefreshMovementSpeedModifiers(container.Owner);
+            }
         }
     }
 

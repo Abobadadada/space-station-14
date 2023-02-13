@@ -3,7 +3,6 @@ using Content.Client.Examine;
 using Content.Client.Storage;
 using Content.Client.UserInterface.Controls;
 using Content.Client.Verbs;
-using Content.Client.Verbs.UI;
 using Content.Shared.Clothing.Components;
 using Content.Shared.Hands.Components;
 using Content.Shared.Interaction;
@@ -13,7 +12,6 @@ using Content.Shared.Inventory.Events;
 using JetBrains.Annotations;
 using Robust.Client.GameObjects;
 using Robust.Client.Player;
-using Robust.Client.UserInterface;
 using Robust.Shared.Containers;
 using Robust.Shared.Input.Binding;
 using Robust.Shared.Prototypes;
@@ -25,10 +23,10 @@ namespace Content.Client.Inventory
     {
         [Dependency] private readonly IPrototypeManager _prototypeManager = default!;
         [Dependency] private readonly IPlayerManager _playerManager = default!;
-        [Dependency] private readonly IUserInterfaceManager _ui = default!;
 
         [Dependency] private readonly ClientClothingSystem _clothingVisualsSystem = default!;
         [Dependency] private readonly ExamineSystem _examine = default!;
+        [Dependency] private readonly VerbSystem _verbs = default!;
 
         public Action<SlotData>? EntitySlotUpdate = null;
         public Action<SlotData>? OnSlotAdded = null;
@@ -272,7 +270,7 @@ namespace Content.Client.Inventory
             if (!TryGetSlotEntity(uid, slot, out var item))
                 return;
 
-            _ui.GetUIController<VerbMenuUIController>().OpenVerbMenu(item.Value);
+            _verbs.VerbMenu.OpenVerbMenu(item.Value);
         }
 
         public void UIInventoryActivateItem(string slot, EntityUid uid)

@@ -106,11 +106,19 @@ public sealed partial class CrewManifestUi : DefaultWindow
 
             if (Loc.TryGetString($"department-{sectionTitle}", out var localizedDepart))
                 sectionTitle = localizedDepart;
-
+ 
             AddChild(new Label()
             {
                 StyleClasses = { "LabelBig" },
                 Text = Loc.GetString(sectionTitle)
+            });
+
+            entries.Sort((a, b) =>
+            {
+                var posA = crewManifestSystem.GetDepartmentOrder(sectionTitle, a.JobPrototype);
+                var posB = crewManifestSystem.GetDepartmentOrder(sectionTitle, b.JobPrototype);
+
+                return posA.CompareTo(posB);
             });
 
             var gridContainer = new GridContainer()
@@ -139,7 +147,7 @@ public sealed partial class CrewManifestUi : DefaultWindow
                 };
 
                 var title = new RichTextLabel();
-                title.SetMessage(entry.JobTitle);
+                title.SetMessage(Loc.GetString(entry.JobTitle));
 
 
                 if (rsi != null)
