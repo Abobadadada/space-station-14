@@ -1,6 +1,8 @@
 using Content.Shared.ActionBlocker;
 using Content.Shared.Cuffs.Components;
 using Content.Shared.DragDrop;
+using Content.Shared.Hands;
+using Content.Shared.Hands.Components;
 using Content.Shared.Interaction.Events;
 using Content.Shared.Inventory.Events;
 using Content.Shared.Item;

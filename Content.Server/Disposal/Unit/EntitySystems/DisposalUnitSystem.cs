@@ -71,7 +71,7 @@ namespace Content.Server.Disposal.Unit.EntitySystems
             // Interactions
             SubscribeLocalEvent<DisposalUnitComponent, ActivateInWorldEvent>(HandleActivate);
             SubscribeLocalEvent<DisposalUnitComponent, AfterInteractUsingEvent>(HandleAfterInteractUsing);
-            SubscribeLocalEvent<DisposalUnitComponent, DragDropEvent>(HandleDragDropOn);
+            SubscribeLocalEvent<DisposalUnitComponent, DragDropTargetEvent>(HandleDragDropOn);
             SubscribeLocalEvent<DisposalUnitComponent, DestructionEventArgs>(HandleDestruction);
 
             // Verbs
@@ -409,7 +409,7 @@ namespace Content.Server.Disposal.Unit.EntitySystems
             TryEjectContents(component);
         }
 
-        private void HandleDragDropOn(EntityUid uid, DisposalUnitComponent component, DragDropEvent args)
+        private void HandleDragDropOn(EntityUid uid, DisposalUnitComponent component, ref DragDropTargetEvent args)
         {
             args.Handled = TryInsert(component.Owner, args.Dragged, args.User);
         }
